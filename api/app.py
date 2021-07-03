@@ -23,7 +23,6 @@ def get_user(user_id):
             id,
             name,
             email,
-            profile
         FROM users
         WHERE id = :user_id
     """), {
@@ -34,7 +33,6 @@ def get_user(user_id):
         'id'      : user['id'],
         'name'    : user['name'],
         'email'   : user['email'],
-        'profile' : user['profile']
     } if user else None
 
 def insert_user(user):
@@ -42,12 +40,10 @@ def insert_user(user):
         INSERT INTO users (
             name,
             email,
-            profile,
             hashed_password
         ) VALUES (
             :name,
             :email,
-            :profile,
             :password
         )
     """), user).lastrowid
