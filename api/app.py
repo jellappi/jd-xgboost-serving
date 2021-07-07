@@ -9,7 +9,6 @@ from flask.json  import JSONEncoder
 from sqlalchemy  import create_engine, text
 from datetime    import datetime, timedelta
 from functools   import wraps
-from nltk.corpus import stopwords
 from konlpy.tag  import Kkma
 
 import pandas  as pd
@@ -19,18 +18,19 @@ import xgboost as xgb
 kkma = Kkma()
 wlem = nltk.WordNetLemmatizer()
 
-# load data        
-columns = list(pd.read_csv('/home/ubuntu/data/preprocessed_data.csv', nrows=0).columns)
+# load data
+prefix = '/home/ubuntu'
+
+columns = list(pd.read_csv(f'{prefix}/data/preprocessed_data.csv', nrows=0).columns)
 columns.remove('category')
 
-model = pickle.load(open('/home/ubuntu/model/xgb-model', 'rb'))
+encoding = pd.read_csv(f'{prefix}/data/category_encoding.csv', sep='\t', index_col=0)
 
-encoding = pd.read_csv('/home/ubuntu/data/category_encoding.csv', sep='\t', index_col=0)
+model = pickle.load(open(f'{prefix}/model/xgb-model', 'rb'))
 
 
-## Default JSON encoder는 set를 JSON으로 변환할 수 없다.
-## 그럼으로 커스텀 엔코더를 작성해서 set을 list로 변환하여
-## JSON으로 변환 가능하게 해주어야 한다.
+# Custom JSON Encoder which transforms set into list
+# (HTTP can't send set)
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, set):
