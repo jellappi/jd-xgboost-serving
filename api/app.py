@@ -15,6 +15,18 @@ from konlpy.tag  import Kkma
 import pandas  as pd
 import xgboost as xgb
 
+# nlp instance
+kkma = Kkma()
+wlem = nltk.WordNetLemmatizer()
+
+# load data        
+columns = list(pd.read_csv('/home/ubuntu/data/preprocessed_data.csv', nrows=0).columns)
+columns.remove('category')
+
+model = pickle.load(open('/home/ubuntu/model/xgb-model', 'rb'))
+
+encoding = pd.read_csv('/home/ubuntu/data/category_encoding.csv', sep='\t', index_col=0)
+
 
 ## Default JSON encoder는 set를 JSON으로 변환할 수 없다.
 ## 그럼으로 커스텀 엔코더를 작성해서 set을 list로 변환하여
@@ -73,7 +85,7 @@ def get_user_id_and_password(email):
 
 def extract_kor(string):
     
-    kkma = Kkma()
+    #kkma = Kkma()
     
     text_data = [] 
     
@@ -88,7 +100,7 @@ def extract_kor(string):
 
 def extract_eng(string):
     
-    wlem = nltk.WordNetLemmatizer()
+    #wlem = nltk.WordNetLemmatizer()
     
     cleaned_content = re.sub(r'[^\.\?\!\w\d\s]', '', string)
     
@@ -204,15 +216,6 @@ def create_app(test_config = None):
             if len(ex) == 0:
                 ex = extract_eng(jd['main_tasks'])
                 
-                
-        # load data        
-        columns = list(pd.read_csv('/home/ubuntu/data/preprocessed_data.csv', nrows=0).columns)
-        columns.remove('category')
-        
-        model = pickle.load(open('/home/ubuntu/model/xgb-model', 'rb'))
-        
-        encoding = pd.read_csv('/home/ubuntu/data/category_encoding.csv', sep='\t', index_col=0)
-        
         
         # request preprocessing
         df = pd.DataFrame(columns=columns)
@@ -224,6 +227,8 @@ def create_app(test_config = None):
         for w in ex:
             if w in df.columns:
                 df.loc[0, w] = 1
+                
+        df = df[sorted(df.columns)]
 
         dtest = xgb.DMatrix(data=df)
         
