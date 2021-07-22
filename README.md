@@ -2,6 +2,7 @@
 - Data : job description data (text)
 - Model : XGBoost
 - Web Framework : Flask
+- DB : MySQL
 
 ## Flask run
 <img width="905" alt="flask run" src="https://user-images.githubusercontent.com/57607047/126628205-bcc8fc87-529f-48ee-800a-1b71f94047c5.png">
