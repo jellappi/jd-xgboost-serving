@@ -14,11 +14,13 @@ def api():
     api = app.test_client()
 
     return api
+
+
 def test_ping(api):
     resp = api.get('/ping')
     assert b'pong' in resp.data
 
-
+# codes before each tests
 def setup_function():
     ## Create a test user
     hashed_password = bcrypt.hashpw(
@@ -31,7 +33,8 @@ def setup_function():
             'name'            : 'songha',
             'email'           : 'amaranth7219@gmail.com',
             'hashed_password' : hashed_password
-        }, {
+        },
+        {
             'id'              : 2,
             'name'            : 'chulsu',
             'email'           : 'chulsu@chulsu.com',
@@ -52,7 +55,7 @@ def setup_function():
         )
     """), new_users)
 
-
+# codes after each tests
 def teardown_function():
     database.execute(text("SET FOREIGN_KEY_CHECKS=0"))
     database.execute(text("TRUNCATE users"))
@@ -64,6 +67,7 @@ def test_infer(api):
     resp = api.post(
             '/login',
             data = json.dumps({
+                'name': 'songha',
                 'email': 'amaranth7219@gmail.com',
                 'password': 'test password'
                 }),
